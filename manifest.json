@@ -1,0 +1,49 @@
+{
+  "manifest_version": 3,
+  "name": "Delayed gratification Research",
+  "version": "1.0",
+  "description": "Delayed gratification Research at CODE University",
+  "permissions": ["storage", "tabs", "activeTab"],
+  "host_permissions": [
+    "https://*.youtube.com/*",
+    "https://*.instagram.com/*",
+    "https://*.facebook.com/*",
+    "https://*.linkedin.com/*",
+    "https://*.pinterest.com/*",
+    "https://*.vk.com/*",
+    "https://*.tiktok.com/*",
+    "http://localhost:*/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.youtube.com/*",
+        "*://*.instagram.com/*",
+        "*://*.facebook.com/*",
+        "*://*.linkedin.com/*",
+        "*://*.pinterest.com/*",
+        "*://*.vk.com/*",
+        "*://*.tiktok.com/*"
+      ],
+      "js": ["contentScript.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "overlay.html",
+        "overlay.css",
+        "assets/material-icons.css",
+        "assets/material-icons.woff2"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  }
+}

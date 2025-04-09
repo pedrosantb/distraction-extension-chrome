@@ -1,0 +1,196 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+:root {
+  --primary-color: #3f51b5;
+  --primary-dark: #303f9f;
+  --primary-light: #c5cae9;
+  --background-light: #ffffff;
+  --background-dark: #424242;
+  --text-color-light: #212121;
+  --text-color-dark: #f5f5f5;
+  --accent-color: #ff4081;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 16px;
+  background-color: var(--background-light);
+  color: var(--text-color-light);
+  border-radius: 12px;
+}
+
+/* Popup modal styled wider (600px) and with no overall scroll */
+.popup-container {
+  min-width: 300px;
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 400px;
+  margin: auto;
+  /* No overflow-y on the entire popup */
+}
+
+/* Popup title */
+.popup-title {
+  text-align: center;
+  font-weight: 500;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.popup-title .material-icons {
+  margin-right: 8px;
+}
+
+/* Settings section */
+.settings {
+  margin-bottom: 24px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.input-group label {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.input-group label .material-icons {
+  margin-right: 4px;
+  font-size: 18px;
+}
+
+.input-group input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--primary-light);
+  outline: none;
+  margin: 4px 0;
+}
+
+.input-group input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  cursor: pointer;
+  border: none;
+}
+
+.input-group input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  cursor: pointer;
+  border: none;
+}
+
+.input-group span {
+  font-size: 14px;
+  text-align: right;
+  margin-top: 4px;
+}
+
+/* Save settings button */
+#saveSettings {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  border: none;
+  border-radius: 4px;
+  background-color: var(--primary-color);
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#saveSettings:hover {
+  background-color: var(--primary-dark);
+}
+
+/* Notes section: only #notes scrolls vertically */
+.notes-section {
+  max-height: 150px;
+  overflow-y: scroll;
+  margin-top: 16px;
+}
+
+.notes-section h3 {
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+
+.notes-section h3 .material-icons {
+  margin-right: 8px;
+}
+
+#notes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-right: 4px;
+}
+
+/* Note card styling */
+.note-card {
+  background-color: var(--background-light);
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+}
+.text-div {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+/* App badge inside note card */
+.app-badge {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 12px;
+}
+
+/* System dark mode via prefers-color-scheme */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background-light: #333333;
+    --background-dark: #333333;
+    --text-color-light: #f5f5f5;
+  }
+  body {
+    background-color: var(--background-light);
+    color: var(--text-color-light);
+  }
+  .popup-container {
+    background-color: var(--background-light);
+  }
+  .note-card {
+    background-color: #424242;
+    border-color: #555;
+    color: var(--text-color-light);
+  }
+  #saveSettings {
+    background-color: var(--primary-dark);
+  }
+  #saveSettings:hover {
+    background-color: var(--primary-color);
+  }
+}

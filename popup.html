@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Screen Blocker Control</title>
+  <link rel="stylesheet" href="popup.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+  <div class="popup-container">
+    <h2 class="popup-title">
+      <span class="material-icons">block</span>
+      Delayed gratification
+    </h2>
+    <div class="settings">
+      <div class="input-group">
+        <label for="blockDuration">
+          <span class="material-icons">timer</span>
+          Delay Duration (minutes)
+        </label>
+        <input type="range" id="blockDuration" min="1" max="60" value="10">
+        <span id="blockDurationValue">10</span>
+      </div>
+      <div class="input-group">
+        <label for="freeDuration">
+          <span class="material-icons">free_breakfast</span>
+          Free Usage Duration (minutes)
+        </label>
+        <input type="range" title="" id="freeDuration" min="1" max="60" value="5">
+        <span id="freeDurationValue">5</span>
+      </div>
+      <button id="saveSettings">Save Settings</button>
+    </div>
+    <div class="notes-section">
+      <h3>
+        <span class="material-icons">notes</span>
+        Your Notes
+      </h3>
+      <div id="notes">
+        <!-- Notes will be dynamically inserted here -->
+      </div>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
