@@ -6,36 +6,46 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
-  <div class="popup-container">
-    <h2 class="popup-title">
+
+  <div class="popup-container" title="Control panel for configuring your delayed gratification settings">
+
+    <h2 class="popup-title" title="Delayed Gratification - Block distracting sites for a set period">
       <span class="material-icons">block</span>
-      Delayed gratification
+      Delayed Gratification
     </h2>
-    <div class="settings">
-      <div class="input-group">
-        <label for="blockDuration">
+    
+
+    <div class="settings" title="Settings: adjust block duration and free usage duration">
+
+      <div class="input-group" title="Set the duration (in minutes) to block distracting sites">
+        <label for="blockDuration" title="Set block duration">
           <span class="material-icons">timer</span>
-          Delay Duration (minutes)
+          Block Duration (minutes)
         </label>
-        <input type="range" id="blockDuration" min="1" max="60" value="10">
+        <input type="range" id="blockDuration" min="1" max="60" value="10" title="Block duration slider">
         <span id="blockDurationValue">10</span>
       </div>
-      <div class="input-group">
-        <label for="freeDuration">
+
+      <div class="input-group" title="Set the duration (in minutes) of free usage after blocking">
+        <label for="freeDuration" title="Set free usage duration">
           <span class="material-icons">free_breakfast</span>
           Free Usage Duration (minutes)
         </label>
-        <input type="range" title="" id="freeDuration" min="1" max="60" value="5">
+        <input type="range" id="freeDuration" min="1" max="60" value="5" title="Free usage duration slider">
         <span id="freeDurationValue">5</span>
       </div>
-      <button id="saveSettings">Save Settings</button>
+
+      <button id="saveSettings" title="Click to save your settings">Save Settings</button>
+
+      <div id="save-status" title="Status message" style="display:none;"></div>
     </div>
-    <div class="notes-section">
-      <h3>
+
+    <div class="notes-section" title="View your saved notes">
+      <h3 title="Your saved notes">
         <span class="material-icons">notes</span>
         Your Notes
       </h3>
-      <div id="notes">
+      <div id="notes" title="Notes list">
         <!-- Notes will be dynamically inserted here -->
       </div>
     </div>

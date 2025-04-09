@@ -12,7 +12,7 @@
     "https://*.pinterest.com/*",
     "https://*.vk.com/*",
     "https://*.tiktok.com/*",
-    "http://localhost:*/*"
+    "https://distraction-webapp.vercel.app/*"
   ],
   "background": {
     "service_worker": "background.js"
@@ -38,7 +38,9 @@
         "overlay.html",
         "overlay.css",
         "assets/material-icons.css",
-        "assets/material-icons.woff2"
+        "assets/material-icons.woff2",
+        "floating-timer.html",
+        "floating-timer.css"
       ],
       "matches": ["<all_urls>"]
     }

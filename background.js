@@ -1,4 +1,4 @@
-const POST_URL = "http://localhost:3000/api/notes"; // Replace with your actual endpoint
+const POST_URL = "https://distraction-webapp.vercel.app/api/notes/"; 
 
 // Listen for messages from content scripts
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
