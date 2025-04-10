@@ -50,7 +50,6 @@ function checkFreeUsageAndMaybeBlock() {
   });
 }
 
-
   // Load the overlay from external HTML and CSS.
   function loadOverlay() {
     // Make sure there is no previous overlay.
@@ -111,8 +110,14 @@ function checkFreeUsageAndMaybeBlock() {
       timerDisplay.textContent = formatTime(remainingTime);
       if (remainingTime <= 0) {
         clearInterval(timerInterval);
-        // On timer expiry, set free usage and remove the overlay.
-        startFreePeriod();
+
+        if (noteText.value.trim() === "") {
+          startFreePeriod();
+        } else {
+          console.log(noteSubmit.textContent);
+          console.log(noteText.value.trim());
+          noteSubmit.textContent = "Send and continue"
+        }
       }
     }, 1000);
 
@@ -120,7 +125,12 @@ function checkFreeUsageAndMaybeBlock() {
       if (noteText.value.trim()) {
         saveNote(noteText.value.trim());
         noteContainer.remove();
-        showEncouragement();
+        if(noteSubmit.textContent === "Send and continue"){
+          noteSubmit.textContent = "Submit Note";
+          startFreePeriod();
+        } else{
+          showEncouragement();
+        }
       }
     });
   }
