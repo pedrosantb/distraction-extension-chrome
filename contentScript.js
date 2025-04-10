@@ -95,45 +95,53 @@ function checkFreeUsageAndMaybeBlock() {
       });
   }
 
-  // Initialize the overlay: set up the timer and note submission.
   function initOverlay() {
     const timerDisplay = overlay.querySelector("#timer-display");
     const noteContainer = overlay.querySelector("#note-container");
     const noteText = overlay.querySelector("#note-text");
     const noteSubmit = overlay.querySelector("#note-submit");
-
+  
     remainingTime = blockDuration;
     timerDisplay.textContent = formatTime(remainingTime);
-
+  
+    // Flag to ensure free period code is executed only once.
+    let freePeriodStarted = false;
+  
     timerInterval = setInterval(() => {
       remainingTime -= 1000;
       timerDisplay.textContent = formatTime(remainingTime);
       if (remainingTime <= 0) {
         clearInterval(timerInterval);
-
-        if (noteText.value.trim() === "") {
-          startFreePeriod();
+        if (!noteText.value.trim()) {
+          if (!freePeriodStarted) {
+            freePeriodStarted = true;
+            console.log("Not finding the text");
+            console.log(noteText.value.trim());
+            // startFreePeriod();
+          }
         } else {
-          console.log(noteSubmit.textContent);
-          console.log(noteText.value.trim());
-          noteSubmit.textContent = "Send and continue"
+          if (noteSubmit.textContent !== "Send and continue") {
+            noteSubmit.textContent = "Send and continue";
+          }
         }
       }
     }, 1000);
-
+  
     noteSubmit.addEventListener("click", () => {
       if (noteText.value.trim()) {
         saveNote(noteText.value.trim());
         noteContainer.remove();
-        if(noteSubmit.textContent === "Send and continue"){
+        if (noteSubmit.textContent === "Send and continue" && !freePeriodStarted) {
+          freePeriodStarted = true;
           noteSubmit.textContent = "Submit Note";
           startFreePeriod();
-        } else{
+        } else {
           showEncouragement();
         }
       }
     });
   }
+  
 
   // Format milliseconds as mm:ss.
   function formatTime(ms) {
