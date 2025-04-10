@@ -14,17 +14,17 @@ document.addEventListener("DOMContentLoaded", function () {
       const settings = data.settings;
       document.getElementById("blockDuration").value = settings.blockDuration;
       document.getElementById("freeDuration").value = settings.freeDuration;
-      document.getElementById("blockDurationValue").textContent = settings.blockDuration;
-      document.getElementById("freeDurationValue").textContent = settings.freeDuration;
+      document.getElementById("blockDurationValue").textContent = settings.blockDuration + " min";
+      document.getElementById("freeDurationValue").textContent = settings.freeDuration + " min";
     }
   );
   
   // Update slider values as they change.
   document.getElementById("blockDuration").addEventListener("input", function (e) {
-    document.getElementById("blockDurationValue").textContent = e.target.value;
+    document.getElementById("blockDurationValue").textContent = e.target.value + " min";
   });
   document.getElementById("freeDuration").addEventListener("input", function (e) {
-    document.getElementById("freeDurationValue").textContent = e.target.value;
+    document.getElementById("freeDurationValue").textContent = e.target.value + " min";
   });
   
   // Save settings with a visual notification.

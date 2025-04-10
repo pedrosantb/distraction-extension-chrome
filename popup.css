@@ -30,18 +30,30 @@ body {
   /* No overflow-y on the entire popup */
 }
 
-/* Popup title */
-.popup-title {
-  text-align: center;
-  font-weight: 500;
-  margin-bottom: 16px;
+.popup-icon{
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.popup-title .material-icons {
+.popup-icon .material-icons{
+  font-size: 30px;
+}
+
+/* Popup title */
+.popup-title {
+  text-align: center;
+  font-weight: 500;
+  margin-bottom: 16px;
   margin-right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.popup-title .material-icons{
+  font-size: 15px;
 }
 
 /* Settings section */
@@ -118,6 +130,10 @@ body {
 
 #saveSettings:hover {
   background-color: var(--primary-dark);
+}
+
+.save-status{
+  margin-top: 2px;
 }
 
 /* Notes section: only #notes scrolls vertically */

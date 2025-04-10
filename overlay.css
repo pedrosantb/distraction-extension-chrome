@@ -32,6 +32,18 @@
   font-family: 'Roboto', sans-serif;
 }
 
+
+.header{
+  display: flex;
+  align-items: center;
+  justify-content: end;
+}
+
+.header .material-icons{
+  color: var(--text-color-light);
+  font-size: 18px;
+}
+
 /* Timer display styling with added padding */
 .timer-container {
   margin-bottom: 0px;
@@ -88,6 +100,12 @@
   gap: 4px;
   align-items: center;
   justify-content: center;
+}
+
+.disclaimer{
+  color: var(--text-color-light);
+  font-size: 18px;
+  
 }
 
 /* Adjust for dark mode via media query */
