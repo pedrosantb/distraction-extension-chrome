@@ -1,18 +1,19 @@
 (() => {
-  // POST URL constant for sending notes (optional).
-  // (Not used in the content script anymore.)
-
   let blockDuration = 1 * 60 * 1000; // default 1 minute
   let freeDuration = 5 * 60 * 1000;    // free usage duration
   let timerInterval, remainingTime;
   let overlay;
 
+  // Flags to prevent duplicate creations.
+  let overlayLoaded = false;
+  let counterCreated = false;
+  
   // Read settings (blockDuration, freeDuration) and then check free usage.
   chrome.storage.local.get({ settings: { blockDuration: 1, freeDuration: 5 } }, (data) => {
     const settings = data.settings;
     blockDuration = settings.blockDuration * 60 * 1000;
     freeDuration = settings.freeDuration * 60 * 1000;
-    checkFreeUsageAndMaybeBlock();
+    // checkFreeUsageAndMaybeBlock();
   });
 
   // Listen for messages (e.g. from background).
@@ -26,33 +27,36 @@
   });
 
   // Check if free usage period is active.
-function checkFreeUsageAndMaybeBlock() {
-  // Remove any existing overlay.
-  let existing = document.getElementById("screen-blocker");
-  if (existing) {
-    existing.remove();
-  }
-  
-  const hostname = window.location.hostname;
-  chrome.storage.local.get({ freeUsageData: {} }, (result) => {
-    const freeUsageData = result.freeUsageData || {};
-    const freeUntil = freeUsageData[hostname];
-    if (freeUntil && freeUntil > Date.now()) {
-      // Free usage active – create the floating counter only if it doesn't already exist.
-      if (!document.getElementById("free-time-timer")) {
-        createFloatingCounter(freeUntil - Date.now());
-      }
-      console.log(formatTime(freeUntil - Date.now()));
-      return;
-    } else {
-      loadOverlay();
+  function checkFreeUsageAndMaybeBlock() {
+    // Remove any existing overlay if it exists.
+    const existing = document.getElementById("screen-blocker");
+    if (existing) {
+      existing.remove();
+      overlayLoaded = false;
     }
-  });
-}
+
+    const hostname = window.location.hostname;
+    chrome.storage.local.get({ freeUsageData: {} }, (result) => {
+      const freeUsageData = result.freeUsageData || {};
+      const freeUntil = freeUsageData[hostname];
+      if (freeUntil && freeUntil > Date.now()) {
+        // Free usage active – create the floating counter only if it doesn't already exist.
+        if (!counterCreated) {
+          createFloatingCounter(freeUntil - Date.now());
+          counterCreated = true;
+        }
+        console.log("Free time left: " + formatTime(freeUntil - Date.now()));
+        return;
+      } else {
+        loadOverlay();
+      }
+    });
+  }
 
   // Load the overlay from external HTML and CSS.
   function loadOverlay() {
-    // Make sure there is no previous overlay.
+    if (overlayLoaded) return; // Prevent duplicate loads.
+    // Check if overlay element already exists.
     if (document.getElementById("screen-blocker")) return;
 
     // Inject local Material Icons stylesheet.
@@ -74,12 +78,6 @@ function checkFreeUsageAndMaybeBlock() {
     fetch(chrome.runtime.getURL("overlay.html"))
       .then(response => response.text())
       .then(data => {
-        // Remove any existing overlay first.
-        const existingOverlay = document.getElementById("screen-blocker");
-        if (existingOverlay) {
-          existingOverlay.remove();
-        }
-        
         const tempDiv = document.createElement("div");
         tempDiv.innerHTML = data;
         overlay = tempDiv.firstElementChild;
@@ -90,12 +88,24 @@ function checkFreeUsageAndMaybeBlock() {
         if (systemDark) {
           overlay.classList.add("dark");
         }
-
-        initOverlay();
+          overlayLoaded = true;
+          initOverlay();
       });
   }
 
+  let overlayInitialized = false;
+
   function initOverlay() {
+
+    if (overlayInitialized) {
+      console.log("initOverlay already called. Exiting.");
+      return;
+    }
+    
+    console.log("initOverlay called at", new Date().toLocaleTimeString());
+
+    overlayInitialized = true;
+  
     const timerDisplay = overlay.querySelector("#timer-display");
     const noteContainer = overlay.querySelector("#note-container");
     const noteText = overlay.querySelector("#note-text");
@@ -104,7 +114,6 @@ function checkFreeUsageAndMaybeBlock() {
     remainingTime = blockDuration;
     timerDisplay.textContent = formatTime(remainingTime);
   
-    // Flag to ensure free period code is executed only once.
     let freePeriodStarted = false;
   
     timerInterval = setInterval(() => {
@@ -112,13 +121,13 @@ function checkFreeUsageAndMaybeBlock() {
       timerDisplay.textContent = formatTime(remainingTime);
       if (remainingTime <= 0) {
         clearInterval(timerInterval);
-        if (!noteText.value.trim()) {
-          if (!freePeriodStarted) {
-            freePeriodStarted = true;
-            console.log("Not finding the text");
-            console.log(noteText.value.trim());
-            // startFreePeriod();
-          }
+        const currentNote = noteText.value.trim();
+        console.log("Note value at expiry:", currentNote);
+  
+        if (!currentNote && !freePeriodStarted) {
+          freePeriodStarted = true;
+          console.log("No note entered; starting free period.");
+          startFreePeriod();
         } else {
           if (noteSubmit.textContent !== "Send and continue") {
             noteSubmit.textContent = "Send and continue";
@@ -128,8 +137,10 @@ function checkFreeUsageAndMaybeBlock() {
     }, 1000);
   
     noteSubmit.addEventListener("click", () => {
-      if (noteText.value.trim()) {
-        saveNote(noteText.value.trim());
+      const currentNote = noteText.value.trim();
+      if (currentNote) {
+        saveNote(currentNote);
+        noteText.value = ""
         noteContainer.remove();
         if (noteSubmit.textContent === "Send and continue" && !freePeriodStarted) {
           freePeriodStarted = true;
@@ -164,20 +175,18 @@ function checkFreeUsageAndMaybeBlock() {
     return "Unknown";
   }
 
-  // Save note locally and send the note data to the background script to perform the fetch.
+  // Save note locally and send note data to background for fetch.
   async function saveNote(noteText) {
     const newNote = {
-      time: Date.now(), // Using numeric timestamp
+      time: Date.now(),
       text: noteText,
       app: detectApp().toLowerCase(),
     };
-  
+
     await chrome.storage.local.get({ notes: [] }, async (result) => {
       const notes = result.notes;
       notes.push(newNote);
       await chrome.storage.local.set({ notes: notes }, async () => {
-        // Instead of performing fetch from the content script,
-        // send a message to the background script to perform the fetch.
         chrome.runtime.sendMessage({ action: "saveNote", newNote: newNote }, (response) => {
           if (chrome.runtime.lastError) {
             console.error("Runtime error:", chrome.runtime.lastError.message);
@@ -185,21 +194,22 @@ function checkFreeUsageAndMaybeBlock() {
             console.log("Note sent successfully:", response.data);
           }
         });
+        console.log(newNote);
       });
     });
   }
-  
+
   // Set free usage period, remove the overlay, and create the floating counter.
   function startFreePeriod() {
     const hostname = window.location.hostname;
     chrome.storage.local.get({ freeUsageData: {} }, (result) => {
-      // Ensure freeUsageData is an object.
       const freeUsageData = result.freeUsageData || {};
       freeUsageData[hostname] = Date.now() + freeDuration;
-      console.log(formatTime(freeDuration));
+      console.log("Free duration: " + formatTime(freeDuration));
       chrome.storage.local.set({ freeUsageData: freeUsageData }, () => {
         if (overlay) {
           overlay.remove();
+          overlayLoaded = false;
         }
         // After the overlay is removed, create the floating counter.
         createFloatingCounter(freeDuration);
@@ -215,8 +225,11 @@ function checkFreeUsageAndMaybeBlock() {
       existingCounter.remove();
     }
     
+    // Mark that the counter is being created.
+    counterCreated = true;
+    
     // Inject the floating counter CSS if not already loaded.
-    if (!document.querySelector('link[href*="assets/floating-timer.css"]')) {
+    if (!document.querySelector('link[href*="floating-timer.css"]')) {
       const counterLink = document.createElement("link");
       counterLink.href = chrome.runtime.getURL("floating-timer.css");
       counterLink.rel = "stylesheet";
@@ -238,6 +251,7 @@ function checkFreeUsageAndMaybeBlock() {
           if (remaining <= 0) {
             clearInterval(counterInterval);
             counterElement.remove();
+            counterCreated = false;
           } else {
             const freeTimeText = counterElement.querySelector("#free-time-text");
             freeTimeText.textContent = `Free time left: ${formatTime(remaining)}`;
@@ -250,7 +264,6 @@ function checkFreeUsageAndMaybeBlock() {
   function showEncouragement() {
     const encouragementDiv = document.createElement("div");
     encouragementDiv.classList.add("encouragement");
-    // Use the Material Icon "check_circle" in green.
     encouragementDiv.innerHTML = `<div class="success-message"><span class="material-icons" style="color: green;">check_circle</span> <span>Great job! Keep up the focus!</span></div>`;
     const card = overlay.querySelector(".card");
     const existingEncouragement = card.querySelector(".encouragement");
@@ -259,5 +272,4 @@ function checkFreeUsageAndMaybeBlock() {
     }
     card.appendChild(encouragementDiv);
   }
-  
 })();

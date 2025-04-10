@@ -29,7 +29,8 @@
         "*://*.tiktok.com/*"
       ],
       "js": ["contentScript.js"],
-      "run_at": "document_idle"
+      "all_frames": false,
+      "run_at": "document_end"
     }
   ],
   "web_accessible_resources": [
